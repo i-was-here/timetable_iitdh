@@ -1,0 +1,16 @@
+- name: CS301
+  days: M
+  time: 15:00-16:00
+
+- name: CS301
+  days: W
+  time: 13:00-16:00
+
+- name: CS301
+  days: F
+  time: 16:00-17:00
+
+- name: CS311
+  days: W
+  time: 10:30-13:30
+

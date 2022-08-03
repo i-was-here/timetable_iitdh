@@ -1,3 +1,10 @@
+from flask import Flask, request, render_template,send_file
+# import pdfschedule
+import os
+
+app = Flask(__name__) 
+
+
 def day_code(ip_day):
     if(ip_day=="MON"): return "M"
     elif(ip_day=="TUE"): return "T"
@@ -8,25 +15,39 @@ def day_code(ip_day):
     elif(ip_day=="SUN"): return "Su"
     else: Exception("Please enter a valid day !")
 
-if __name__=="__main__":
-    input_data  = {
+@app.route('/', methods =["GET", "POST"])
+def gfg():
+    if request.method == "POST":
+       # getting input with name = fname in HTML form
+        cd = request.form.get("cd")
+        input_data  = {
         "CS303": [("TUE", "10:30-11:30"), ("WED", "09:30-14:30"), ("THU", "09:30-10:30")],
         "CS301": [("MON", "15:00-16:00"), ("WED", "13:00-16:00"), ("FRI", "16:00-17:00")],
         "CS311": [("WED", "10:30-13:30")],
         "PH401": [("TUE", "14:00-15:00"), ("WED", "14:00-15:00"), ("FRI", "19:00-20:00")]
-    }
+        }
+        
+        courses = cd.split()
+        chosen_courses = {i:input_data[i] for i in input_data.keys() if i in courses}
+        with open("timetable.yaml", "wt") as out_file:
+            for key, value in chosen_courses.items():
+                for day_time in value:
+                    out_file.write("- name: "+key+"\n")
 
-    courses = input("Please enter course codes of your courses : ").split()
+                    # use the below line for when a course has same time for all the diven days
+                    # out_file.write("  days: "+"".join([day_code(i[0]) for i in value])+"\n")
 
-    chosen_courses = {i:input_data[i] for i in input_data.keys() if i in courses}
+                    out_file.write("  days: "+day_code(day_time[0])+"\n")
+                    out_file.write("  time: "+day_time[1]+"\n\n")
+                    
+        
+        os.system("pdfschedule timetable.yaml")
+        path = "timetable.pdf"
+        return send_file(path, as_attachment=True)
+        
+    return render_template("index.html")
+    
 
-    with open("timetable.yaml", "wt") as out_file:
-        for key, value in chosen_courses.items():
-            for day_time in value:
-                out_file.write("- name: "+key+"\n")
 
-                # use the below line for when a course has same time for all the diven days
-                # out_file.write("  days: "+"".join([day_code(i[0]) for i in value])+"\n")
-
-                out_file.write("  days: "+day_code(day_time[0])+"\n")
-                out_file.write("  time: "+day_time[1]+"\n\n")
+if __name__=="__main__":
+    app.run()
