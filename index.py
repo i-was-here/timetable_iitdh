@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template,send_file
 # import pdfschedule
 import os
+from courses_list import cse_sem5_dict as input_data
 
 app = Flask(__name__) 
 
@@ -20,12 +21,6 @@ def gfg():
     if request.method == "POST":
        # getting input with name = fname in HTML form
         cd = request.form.get("cd")
-        input_data  = {
-        "CS303": [("TUE", "10:30-11:30"), ("WED", "09:30-14:30"), ("THU", "09:30-10:30")],
-        "CS301": [("MON", "15:00-16:00"), ("WED", "13:00-16:00"), ("FRI", "16:00-17:00")],
-        "CS311": [("WED", "10:30-13:30")],
-        "PH401": [("TUE", "14:00-15:00"), ("WED", "14:00-15:00"), ("FRI", "19:00-20:00")]
-        }
         
         courses = cd.split()
         chosen_courses = {i:input_data[i] for i in input_data.keys() if i in courses}
